@@ -40,8 +40,17 @@
 
     const Dashboard = () => {
       const [searchTerm, setSearchTerm] = useState('');
+      const [submissions, setSubmissions] = useState(MOCK_SUBMISSIONS);
 
-      const filteredSubmissions = MOCK_SUBMISSIONS.filter(sub => 
+      React.useEffect(() => {
+        // Load any real local submissions from localStorage and merge with mock data
+        const local = JSON.parse(localStorage.getItem('feedbackAI_submissions') || '[]');
+        if (local.length > 0) {
+          setSubmissions([...local, ...MOCK_SUBMISSIONS]);
+        }
+      }, []);
+
+      const filteredSubmissions = submissions.filter(sub => 
         sub.name.includes(searchTerm) || 
         sub.tz.includes(searchTerm) || 
         sub.course.includes(searchTerm)

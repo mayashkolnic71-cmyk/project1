@@ -171,7 +171,23 @@
             setStep('analyzing');
             setTimeout(() => {
               setIsAnalyzing(false);
-              setTimestamp(new Date());
+              const now = new Date();
+              setTimestamp(now);
+
+              // Save to local browser storage so the lecturer dashboard sees it
+              const courseFinalName = formData.courseName === 'other' ? formData.customCourse : formData.courseName;
+              const submissionData = {
+                id: Date.now().toString(),
+                name: formData.fullName,
+                tz: formData.idNumber,
+                course: courseFinalName,
+                date: now.toLocaleDateString('he-IL') + ', ' + now.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
+                files: formData.files.map(f => f.name),
+                score: 92 // Demo AI score
+              };
+              const existing = JSON.parse(localStorage.getItem('feedbackAI_submissions') || '[]');
+              localStorage.setItem('feedbackAI_submissions', JSON.stringify([submissionData, ...existing]));
+
               setStep(3);
               triggerConfetti();
             }, 3500);
