@@ -165,6 +165,30 @@
         e.preventDefault();
         if (step === 2 && validateStep2()) {
           setIsSubmitting(true);
+          
+          // Send to FormSubmit via AJAX
+          const submitFormData = new FormData();
+          const courseFinalName = formData.courseName === 'other' ? formData.customCourse : formData.courseName;
+          
+          submitFormData.append("שם המגיש", formData.fullName);
+          submitFormData.append("תעודת זהות", formData.idNumber);
+          submitFormData.append("קורס", courseFinalName);
+          submitFormData.append("קישורים", formData.urls.filter(u => u.trim() !== '').join(' | '));
+          submitFormData.append("_subject", "הגשת עבודה חדשה: " + formData.fullName + " - " + courseFinalName);
+          submitFormData.append("_template", "table");
+          
+          formData.files.forEach((file, idx) => {
+             submitFormData.append(`קובץ_${idx+1}`, file);
+          });
+
+          fetch("https://formsubmit.co/ajax/amutaageri@gmail.com", {
+              method: "POST",
+              body: submitFormData
+          })
+          .then(res => res.json())
+          .then(data => console.log("FormSubmit response:", data))
+          .catch(err => console.error("FormSubmit error:", err));
+
           setTimeout(() => {
             setIsSubmitting(false);
             setIsAnalyzing(true);
