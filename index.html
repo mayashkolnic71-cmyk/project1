@@ -29,7 +29,7 @@
   
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.23.0/babel.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
   <style>
@@ -56,11 +56,14 @@
     .zoom-in-95 { animation: zoomIn 0.7s ease-out; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased">
+<body class="bg-slate-50 min-h-screen text-slate-800">
   <div id="root"></div>
 
-  <script type="text/babel">
-    const { useState, useRef } = React;
+  <script type="text/babel" data-presets="react,env">
+    /** @jsx React.createElement */
+    /** @jsxFrag React.Fragment */
+    
+    const { useState, useEffect, useRef } = React;
 
     const COURSES = [
       "ניהול סיכונים ובטיחות המטופל בגריאטריה",
