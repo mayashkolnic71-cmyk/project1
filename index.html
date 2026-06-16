@@ -200,11 +200,10 @@
             submitData.append("קורס", courseFinalName);
             submitData.append("קישורים", formData.urls.filter(u => u.trim() !== '').join(' | '));
             submitData.append("_subject", "הגשת עבודה חדשה: " + formData.fullName + " - " + courseFinalName);
-            submitData.append("_captcha", "false");
             
             if (formData.files.length > 0) {
               formData.files.forEach((file) => {
-                submitData.append('attachment', file);
+                submitData.append('attachment', file, file.name);
               });
             }
 
