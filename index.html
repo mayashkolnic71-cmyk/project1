@@ -191,32 +191,55 @@
         if (step === 2 && validateStep2()) {
           setIsSubmitting(true);
           
-            // Send to FormSubmit via AJAX fetch
-            const courseFinalName = formData.courseName === 'other' ? formData.customCourse : formData.courseName;
-            
-            const submitData = new FormData();
-            submitData.append("שם המגיש", formData.fullName);
-            submitData.append("תעודת זהות", formData.idNumber);
-            submitData.append("קורס", courseFinalName);
-            submitData.append("קישורים", formData.urls.filter(u => u.trim() !== '').join(' | '));
-            submitData.append("_subject", "הגשת עבודה חדשה: " + formData.fullName + " - " + courseFinalName);
-            
-            if (formData.files.length > 0) {
-              formData.files.forEach((file) => {
-                submitData.append('attachment', file, file.name);
-              });
-            }
+          // Send to FormSubmit via Native Form and Hidden Iframe to guarantee file attachments
+          const courseFinalName = formData.courseName === 'other' ? formData.customCourse : formData.courseName;
+          
+          let iframe = document.getElementById("formsubmit_iframe");
+          if (!iframe) {
+            iframe = document.createElement('iframe');
+            iframe.name = "formsubmit_iframe";
+            iframe.id = "formsubmit_iframe";
+            iframe.style.display = "none";
+            document.body.appendChild(iframe);
+          }
 
-            fetch("https://formsubmit.co/ajax/amutageri@gmail.com", {
-                method: "POST",
-                body: submitData,
-                headers: {
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => console.log("FormSubmit Success:", data))
-            .catch(error => console.error("FormSubmit Error:", error));
+          const nativeForm = document.createElement('form');
+          nativeForm.action = "https://formsubmit.co/amutageri@gmail.com";
+          nativeForm.method = "POST";
+          nativeForm.target = "formsubmit_iframe";
+          nativeForm.enctype = "multipart/form-data";
+          nativeForm.style.display = "none";
+          
+          const addInput = (name, value) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value;
+            nativeForm.appendChild(input);
+          };
+
+          addInput("שם_המגיש", formData.fullName);
+          addInput("תעודת_זהות", formData.idNumber);
+          addInput("קורס", courseFinalName);
+          addInput("קישורים", formData.urls.filter(u => u.trim() !== '').join(' | '));
+          addInput("_subject", "הגשת עבודה חדשה: " + formData.fullName + " - " + courseFinalName);
+          addInput("_captcha", "false"); // Critical to prevent iframe blocking!
+          
+          if (formData.files.length > 0) {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.name = 'attachment'; // FormSubmit recognizes 'attachment'
+            fileInput.multiple = true;
+            const dt = new DataTransfer();
+            formData.files.forEach(f => dt.items.add(f));
+            fileInput.files = dt.files;
+            nativeForm.appendChild(fileInput);
+          }
+          
+          document.body.appendChild(nativeForm);
+          nativeForm.submit();
+          
+          setTimeout(() => { document.body.removeChild(nativeForm); }, 2000);
 
           setTimeout(() => {
             setIsSubmitting(false);
