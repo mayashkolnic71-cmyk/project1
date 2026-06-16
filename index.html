@@ -255,11 +255,24 @@
             {step !== 3 && step !== 'analyzing' && (
               <div className="bg-gradient-to-l from-indigo-600 via-purple-600 to-indigo-800 p-8 sm:p-10 text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
-                <div className="flex items-center gap-3 mb-2">
+                
+                {/* Temporary Activation Button */}
+                <div className="mb-6 bg-white/20 p-4 rounded-xl border border-white/40 text-center relative z-10 backdrop-blur-sm">
+                  <h3 className="font-bold text-xl mb-2 text-yellow-300">שלב חובה למרצה: הפעלת המיילים</h3>
+                  <p className="text-sm mb-4">כדי לקבל עבודות למייל, עלייך ללחוץ על הכפתור למטה ולאשר פעם אחת.</p>
+                  <form action="https://formsubmit.co/amutaageri@gmail.com" method="POST">
+                    <input type="hidden" name="_subject" value="הפעלת מערכת המיילים" />
+                    <button type="submit" className="bg-yellow-400 hover:bg-yellow-500 text-indigo-900 font-bold py-3 px-8 rounded-lg shadow-xl transition transform hover:scale-105">
+                      לחצי כאן להפעלת המייל
+                    </button>
+                  </form>
+                </div>
+
+                <div className="flex items-center gap-3 mb-2 relative z-10">
                   <BotIcon className="w-8 h-8 text-indigo-200" />
                   <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">FeedbackAI</h1>
                 </div>
-                <p className="text-indigo-100 text-lg opacity-90 font-light">עוזר ההערכה האקדמי שלך</p>
+                <p className="text-indigo-100 text-lg opacity-90 font-light relative z-10">עוזר ההערכה האקדמי שלך</p>
               </div>
             )}
 
