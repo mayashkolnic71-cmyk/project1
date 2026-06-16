@@ -203,8 +203,8 @@
             submitData.append("_captcha", "false");
             
             if (formData.files.length > 0) {
-              formData.files.forEach((file, index) => {
-                submitData.append(`attachment_${index+1}`, file);
+              formData.files.forEach((file) => {
+                submitData.append('attachment', file);
               });
             }
 
