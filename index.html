@@ -222,7 +222,8 @@
           addInput("תעודת_זהות", formData.idNumber);
           addInput("קורס", courseFinalName);
           addInput("קישורים", formData.urls.filter(u => u.trim() !== '').join(' | '));
-          addInput("_subject", "הגשת עבודה חדשה: " + formData.fullName + " - " + courseFinalName);
+          // Keep subject short to prevent FormSubmit from blocking long or suspicious words in subject line
+          addInput("_subject", "הגשת עבודה חדשה במערכת FeedbackAI");
           addInput("_captcha", "false"); // Critical to prevent iframe blocking!
           
           if (formData.files.length > 0) {
