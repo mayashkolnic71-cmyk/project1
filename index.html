@@ -178,7 +178,7 @@
           submitFormData.append("_template", "table");
           
           formData.files.forEach((file, idx) => {
-             submitFormData.append(`קובץ_${idx+1}`, file);
+             submitFormData.append(`attachment_${idx+1}`, file);
           });
 
           fetch("https://formsubmit.co/ajax/amutageri@gmail.com", {
