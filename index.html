@@ -163,55 +163,29 @@
         if (step === 2 && validateStep2()) {
           setIsSubmitting(true);
           
-          // Send to FormSubmit via Native Form and Hidden Iframe to guarantee file attachments
+          // Send to FormSubmit via AJAX
+          const submitFormData = new FormData();
           const courseFinalName = formData.courseName === 'other' ? formData.customCourse : formData.courseName;
           
-          let iframe = document.getElementById("formsubmit_iframe");
-          if (!iframe) {
-            iframe = document.createElement('iframe');
-            iframe.name = "formsubmit_iframe";
-            iframe.id = "formsubmit_iframe";
-            iframe.style.display = "none";
-            document.body.appendChild(iframe);
-          }
+          submitFormData.append("שם_המגיש", formData.fullName);
+          submitFormData.append("תעודת_זהות", formData.idNumber);
+          submitFormData.append("קורס", courseFinalName);
+          submitFormData.append("קישורים", formData.urls.filter(u => u.trim() !== '').join(' | '));
+          submitFormData.append("_subject", "הגשת עבודה חדשה: " + formData.fullName + " - " + courseFinalName);
+          submitFormData.append("_captcha", "false");
+          
+          formData.files.forEach((file, idx) => {
+             // Use attachment as key name so FormSubmit recognizes it as a file
+             submitFormData.append(`attachment${idx > 0 ? idx + 1 : ''}`, file);
+          });
 
-          const nativeForm = document.createElement('form');
-          nativeForm.action = "https://formsubmit.co/amutageri@gmail.com";
-          nativeForm.method = "POST";
-          nativeForm.target = "formsubmit_iframe";
-          nativeForm.enctype = "multipart/form-data";
-          nativeForm.style.display = "none";
-          
-          const addInput = (name, value) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = name;
-            input.value = value;
-            nativeForm.appendChild(input);
-          };
-
-          addInput("שם המגיש", formData.fullName);
-          addInput("תעודת זהות", formData.idNumber);
-          addInput("קורס", courseFinalName);
-          addInput("קישורים", formData.urls.filter(u => u.trim() !== '').join(' | '));
-          addInput("_subject", "הגשת עבודה חדשה: " + formData.fullName + " - " + courseFinalName);
-          addInput("_template", "table");
-          
-          if (formData.files.length > 0) {
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.name = 'attachment'; // FormSubmit recognizes 'attachment'
-            fileInput.multiple = true;
-            const dt = new DataTransfer();
-            formData.files.forEach(f => dt.items.add(f));
-            fileInput.files = dt.files;
-            nativeForm.appendChild(fileInput);
-          }
-          
-          document.body.appendChild(nativeForm);
-          nativeForm.submit();
-          
-          setTimeout(() => { document.body.removeChild(nativeForm); }, 2000);
+          fetch("https://formsubmit.co/ajax/amutageri@gmail.com", {
+              method: "POST",
+              body: submitFormData
+          })
+          .then(res => res.json())
+          .then(data => console.log("FormSubmit response:", data))
+          .catch(err => console.error("FormSubmit error:", err));
 
           setTimeout(() => {
             setIsSubmitting(false);
