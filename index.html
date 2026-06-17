@@ -376,7 +376,6 @@
                         formattedDate = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
                       }
 
-                      const docFileName = COURSE_DOCS[course];
                       const docViewerUrl = docFileName ? `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent('https://project1-nine-murex-36.vercel.app/' + docFileName)}` : null;
 
                       return (
