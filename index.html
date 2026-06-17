@@ -376,7 +376,7 @@
                         formattedDate = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
                       }
 
-                      const docViewerUrl = docFileName ? `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(window.location.origin + '/' + docFileName)}` : null;
+                      const docViewerUrl = docFileName ? `https://docs.google.com/gview?url=${encodeURIComponent(window.location.origin + '/' + docFileName)}&embedded=true` : null;
 
                       return (
                         <div key={idx} className="bg-slate-50 p-4 rounded-xl flex flex-col h-full transition-all shadow-[inset_2px_2px_5px_#d1d5db,inset_-2px_-2px_5px_#ffffff] border border-slate-200">
