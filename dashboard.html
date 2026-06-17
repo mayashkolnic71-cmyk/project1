@@ -41,17 +41,48 @@
       { id: '4', name: 'שירה אברהם', tz: '312456987', course: 'אתיקה מקצועית ומשפט רפואי', date: '13.06.2026, 09:20', files: ['ethics_final.pdf'], score: 85 }
     ];
 
+    // Initial state for course settings
+    const DEFAULT_COURSE_SETTINGS = {
+      "ניהול סיכונים ובטיחות המטופל בגריאטריה": { date: "", link: "" },
+      "מניעת זיהומים": { date: "", link: "" },
+      "טיפול תומך": { date: "", link: "" }
+    };
+
     const Dashboard = () => {
       const [searchTerm, setSearchTerm] = useState('');
       const [submissions, setSubmissions] = useState(MOCK_SUBMISSIONS);
+      const [courseSettings, setCourseSettings] = useState(DEFAULT_COURSE_SETTINGS);
+      const [activeTab, setActiveTab] = useState('submissions'); // 'submissions' or 'settings'
 
       React.useEffect(() => {
-        // Load any real local submissions from localStorage and merge with mock data
+        // Load submissions
         const local = JSON.parse(localStorage.getItem('feedbackAI_submissions') || '[]');
         if (local.length > 0) {
           setSubmissions([...local, ...MOCK_SUBMISSIONS]);
         }
+        
+        // Load course settings
+        const settings = JSON.parse(localStorage.getItem('feedbackAI_course_settings'));
+        if (settings) {
+          setCourseSettings(prev => ({ ...prev, ...settings }));
+        }
       }, []);
+
+      const saveCourseSettings = (newSettings) => {
+        setCourseSettings(newSettings);
+        localStorage.setItem('feedbackAI_course_settings', JSON.stringify(newSettings));
+        alert('ההגדרות נשמרו בהצלחה! הסטודנטים יראו את העדכון במסך ההגשה.');
+      };
+
+      const handleSettingChange = (course, field, value) => {
+        setCourseSettings(prev => ({
+          ...prev,
+          [course]: {
+            ...prev[course],
+            [field]: value
+          }
+        }));
+      };
 
       const clearAllSubmissions = () => {
         if (window.confirm('האם את בטוחה שברצונך למחוק את כל ההגשות מהלוח? (פעולה זו לא תמחק אותן מהמייל שלך)')) {
@@ -95,10 +126,70 @@
               </p>
             </div>
 
-            {/* Toolbar */}
-            <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-              <div className="flex items-center gap-4">
-                <h2 className="text-2xl font-bold text-slate-800">רשימת עבודות שהוגשו</h2>
+            {/* Tabs */}
+            <div className="flex space-x-reverse space-x-4 mb-6 border-b border-slate-200">
+              <button 
+                onClick={() => setActiveTab('submissions')} 
+                className={`pb-3 px-2 font-medium text-lg transition-colors ${activeTab === 'submissions' ? 'border-b-2 border-indigo-600 text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                הגשות סטודנטים
+              </button>
+              <button 
+                onClick={() => setActiveTab('settings')} 
+                className={`pb-3 px-2 font-medium text-lg transition-colors ${activeTab === 'settings' ? 'border-b-2 border-indigo-600 text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                ניהול קורסים (תאריכים והנחיות)
+              </button>
+            </div>
+
+            {activeTab === 'settings' && (
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden fade-in p-6">
+                <h2 className="text-xl font-bold text-slate-800 mb-6">הגדרת תאריכי הגשה והנחיות לקורסים</h2>
+                <div className="space-y-8">
+                  {Object.keys(DEFAULT_COURSE_SETTINGS).map((course, idx) => (
+                    <div key={idx} className="bg-slate-50 p-5 rounded-xl border border-slate-100">
+                      <h3 className="font-bold text-lg text-indigo-800 mb-4">{course}</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1">תאריך הגשה אחרון (Deadline)</label>
+                          <input 
+                            type="date" 
+                            value={courseSettings[course]?.date || ''}
+                            onChange={(e) => handleSettingChange(course, 'date', e.target.value)}
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-slate-700 mb-1">קישור למסמך הנחיות (Google Drive / אתר)</label>
+                          <input 
+                            type="url" 
+                            placeholder="https://..."
+                            value={courseSettings[course]?.link || ''}
+                            onChange={(e) => handleSettingChange(course, 'link', e.target.value)}
+                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition dir-ltr"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-8 flex justify-end">
+                  <button 
+                    onClick={() => saveCourseSettings(courseSettings)}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl shadow-md transition transform hover:-translate-y-0.5"
+                  >
+                    שמור הגדרות קורסים
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'submissions' && (
+              <>
+                {/* Toolbar */}
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 fade-in">
+                  <div className="flex items-center gap-4">
+                    <h2 className="text-2xl font-bold text-slate-800">רשימת עבודות שהוגשו</h2>
                 {submissions.length > 0 && (
                   <button 
                     onClick={clearAllSubmissions}
@@ -124,7 +215,7 @@
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden fade-in">
               <div className="overflow-x-auto">
                 <table className="w-full text-right text-sm text-slate-600">
                   <thead className="text-xs text-slate-500 uppercase bg-slate-50 border-b border-slate-200">
@@ -173,6 +264,8 @@
                 </table>
               </div>
             </div>
+              </>
+            )}
 
           </main>
         </div>

@@ -109,7 +109,15 @@
       const [isAnalyzing, setIsAnalyzing] = React.useState(false);
       const [timestamp, setTimestamp] = React.useState(null);
       const [feedbackData, setFeedbackData] = React.useState([]);
+      const [courseSettings, setCourseSettings] = React.useState(null);
       const fileInputRef = useRef(null);
+
+      useEffect(() => {
+        const settings = JSON.parse(localStorage.getItem('feedbackAI_course_settings'));
+        if (settings) {
+          setCourseSettings(settings);
+        }
+      }, []);
 
       const triggerConfetti = () => {
         if (window.confetti) {
@@ -336,6 +344,46 @@
 
             <div className="p-8 sm:p-10">
               {renderProgressBar()}
+
+              {step === 1 && courseSettings && (
+                <div className="mb-8 bg-indigo-50/50 border border-indigo-100 rounded-2xl p-6 shadow-sm fade-in">
+                  <h2 className="text-xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+                    <BookOpenIcon className="w-6 h-6 text-indigo-500" />
+                    הנחיות ותאריכי הגשה
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {Object.entries(courseSettings).map(([course, data], idx) => {
+                      if (!data.date && !data.link) return null; // Don't show empty courses
+                      
+                      // Format date if exists
+                      let formattedDate = "";
+                      if (data.date) {
+                        const d = new Date(data.date);
+                        formattedDate = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
+                      }
+
+                      return (
+                        <div key={idx} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col h-full hover:shadow-md transition-shadow">
+                          <h3 className="font-bold text-slate-800 text-sm mb-2 leading-tight flex-grow">{course}</h3>
+                          
+                          <div className="mt-auto space-y-2 pt-2 border-t border-slate-50">
+                            {data.date && (
+                              <div className="flex items-center gap-2 text-xs text-rose-600 font-medium bg-rose-50 px-2 py-1.5 rounded-md">
+                                <AlertCircleIcon className="w-4 h-4" /> הגשה עד: {formattedDate}
+                              </div>
+                            )}
+                            {data.link && (
+                              <a href={data.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-indigo-600 font-medium bg-indigo-50 hover:bg-indigo-100 px-2 py-1.5 rounded-md transition-colors w-full">
+                                <FileTextIcon className="w-4 h-4" /> צפייה בהנחיות המטלה
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               <form onSubmit={handleSubmit}>
                 {step === 1 && (
