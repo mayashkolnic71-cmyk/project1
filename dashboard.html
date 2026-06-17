@@ -57,7 +57,11 @@
       React.useEffect(() => {
         // Load submissions
         const local = JSON.parse(localStorage.getItem('feedbackAI_submissions') || '[]');
-        if (local.length > 0) {
+        const isCleared = localStorage.getItem('feedbackAI_cleared') === 'true';
+        
+        if (isCleared) {
+          setSubmissions(local);
+        } else {
           setSubmissions([...local, ...MOCK_SUBMISSIONS]);
         }
         
@@ -87,6 +91,7 @@
       const clearAllSubmissions = () => {
         if (window.confirm('האם את בטוחה שברצונך למחוק את כל ההגשות מהלוח? (פעולה זו לא תמחק אותן מהמייל שלך)')) {
           localStorage.removeItem('feedbackAI_submissions');
+          localStorage.setItem('feedbackAI_cleared', 'true');
           setSubmissions([]);
         }
       };
