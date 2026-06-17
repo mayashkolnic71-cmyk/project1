@@ -1,0 +1,21 @@
+{
+  "name": "פורטל הגשת עבודות",
+  "short_name": "הגשת עבודות",
+  "description": "מערכת להגשת מטלות וצפייה בהנחיות הקורסים",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#e0e7ff",
+  "theme_color": "#3730a3",
+  "icons": [
+    {
+      "src": "https://static.wixstatic.com/media/6bc0af_7019d443c059443b9e25e6cf39f14dea~mv2.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://static.wixstatic.com/media/6bc0af_7019d443c059443b9e25e6cf39f14dea~mv2.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
