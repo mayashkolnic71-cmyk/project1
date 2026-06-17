@@ -106,10 +106,16 @@
       const [formData, setFormData] = useState({ courseName: '', fullName: '', idNumber: '', urls: ['', '', ''], files: [] });
       const [errors, setErrors] = useState({});
       const [isSubmitting, setIsSubmitting] = useState(false);
+      const DEFAULT_COURSE_SETTINGS = {
+        "ניהול סיכונים ובטיחות המטופל בגריאטריה": { date: "" },
+        "מניעת זיהומים": { date: "" },
+        "טיפול תומך": { date: "" }
+      };
+
       const [isAnalyzing, setIsAnalyzing] = React.useState(false);
       const [timestamp, setTimestamp] = React.useState(null);
       const [feedbackData, setFeedbackData] = React.useState([]);
-      const [courseSettings, setCourseSettings] = React.useState(null);
+      const [courseSettings, setCourseSettings] = React.useState(DEFAULT_COURSE_SETTINGS);
       const [activeDocUrl, setActiveDocUrl] = React.useState(null);
       const fileInputRef = useRef(null);
 
@@ -122,7 +128,7 @@
       useEffect(() => {
         const settings = JSON.parse(localStorage.getItem('feedbackAI_course_settings'));
         if (settings) {
-          setCourseSettings(settings);
+          setCourseSettings(prev => ({ ...prev, ...settings }));
         }
       }, []);
 
@@ -360,7 +366,8 @@
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {Object.entries(courseSettings).map(([course, data], idx) => {
-                      if (!data.date) return null; // Only check date since link is internal now
+                      const docFileName = COURSE_DOCS[course];
+                      if (!data.date && !docFileName) return null; // Show if either date or doc is available
                       
                       // Format date if exists
                       let formattedDate = "";
@@ -567,75 +574,37 @@
                       <CheckCircleIcon className="w-10 h-10" />
                     </div>
                     <h1 className="text-4xl font-extrabold text-slate-800 mb-3 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 print:text-black">
-                      🎉 פרויקט הגמר התקבל בהצלחה!
+                      🎉 ההגשה התקבלה בהצלחה!
                     </h1>
-                    <p className="text-lg text-slate-500">דוח משוב אוטומטי מבוסס AI הופק עבור ההגשה שלך.</p>
+                    <p className="text-lg text-slate-500">העבודה שלך הועברה למרצה לבדיקה והערכה.</p>
                   </div>
 
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    <div className="lg:col-span-4 space-y-6">
-                      <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 shadow-sm print:border-slate-300 print:bg-transparent">
-                        <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                          <FileTextIcon className="w-5 h-5 text-indigo-500" /> 📄 אישור הגשה דיגיטלי
-                        </h2>
-                        <div className="space-y-4">
-                          <div><p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">שם הסטודנט/ית</p><p className="font-semibold text-slate-800">{formData.fullName}</p></div>
-                          <div><p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">תעודת זהות</p><p className="font-semibold text-slate-800">{formData.idNumber}</p></div>
-                          <div><p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">שם הקורס</p><p className="font-semibold text-slate-800">{formData.courseName === 'other' ? formData.customCourse : formData.courseName}</p></div>
-                          <div><p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">מועד הגשה</p><p className="font-semibold text-slate-800" dir="ltr" style={{textAlign:'right'}}>{timestamp?.toLocaleDateString('he-IL')} {timestamp?.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}</p></div>
-                          <div className="pt-3 border-t border-slate-200">
-                            <p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-2">קישורים/קבצים שנקלטו</p>
-                            <ul className="space-y-2">
-                              {formData.files.map((file, i) => (
-                                <li key={`file-${i}`} className="flex items-start gap-2 text-sm text-slate-700">
-                                  <FileTextIcon className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-                                  <span className="truncate dir-ltr" title={file.name}>{file.name}</span>
-                                </li>
-                              ))}
-                              {formData.urls.filter(u => u.trim() !== '').map((url, i) => (
-                                <li key={`url-${i}`} className="flex items-start gap-2 text-sm">
-                                  <LinkIcon className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
-                                  <a href={url} target="_blank" className="text-indigo-600 hover:underline truncate dir-ltr" title={url}>{url}</a>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="lg:col-span-8">
-                      <div className="bg-white rounded-2xl border-2 border-indigo-50 p-8 shadow-md relative overflow-hidden print:shadow-none print:border-slate-300">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50/50 rounded-bl-full -z-10"></div>
-                        <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
-                          <BotIcon className="w-7 h-7 text-indigo-500" />
-                          📊 דוח משוב והערכה ראשוני <span className="text-sm font-normal text-slate-400 bg-slate-100 px-2 py-1 rounded-md ml-auto">Feedback Report</span>
-                        </h2>
-                        <div className="space-y-6">
-                          {feedbackData.map((item, index) => (
-                            <div key={item.id} className="group">
-                              <div className="flex items-center justify-between mb-2">
-                                <h3 className="font-semibold text-lg text-slate-800 flex items-center gap-2">{index + 1}. {item.title}</h3>
-                                <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-3 py-1 rounded-lg">
-                                  <span className="text-sm font-medium text-slate-500">ציון:</span>
-                                  <span className={`font-bold text-lg ${item.score >= 9 ? 'text-green-600' : 'text-amber-600'}`}>{item.score}/10</span>
-                                </div>
-                              </div>
-                              <div className="flex items-start gap-3 bg-white border border-slate-100 rounded-xl p-4 shadow-sm group-hover:shadow-md transition-shadow">
-                                <div className="mt-0.5 bg-slate-50 p-2 rounded-lg">{item.icon}</div>
-                                <p className="text-slate-600 leading-relaxed text-sm md:text-base">{item.text}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="mt-8 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-100 relative overflow-hidden">
-                          <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-indigo-500 to-purple-500"></div>
-                          <h3 className="font-bold text-slate-800 mb-2 flex items-center gap-2">
-                            <AwardIcon className="w-5 h-5 text-indigo-600" /> 🎯 שורה תחתונה ונקודות לשיפור:
-                          </h3>
-                          <p className="text-slate-700 font-medium leading-relaxed">
-                            פרויקט מצוין שמעיד על הבנה עמוקה של החומר בקורס '{formData.courseName === 'other' ? formData.customCourse : formData.courseName}'. מומלץ להמשיך להעמיק במחקרים עדכניים כדי לחזק עוד יותר את הבסיס התיאורטי. עבודה יפה מאוד! המשך כך.
-                          </p>
+                  <div className="max-w-xl mx-auto space-y-6">
+                    <div className="bg-slate-50 rounded-2xl border border-slate-200 p-6 shadow-sm print:border-slate-300 print:bg-transparent">
+                      <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <FileTextIcon className="w-5 h-5 text-indigo-500" /> 📄 אישור הגשה דיגיטלי
+                      </h2>
+                      <div className="space-y-4">
+                        <div><p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">שם הסטודנט/ית</p><p className="font-semibold text-slate-800">{formData.fullName}</p></div>
+                        <div><p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">תעודת זהות</p><p className="font-semibold text-slate-800">{formData.idNumber}</p></div>
+                        <div><p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">שם הקורס</p><p className="font-semibold text-slate-800">{formData.courseName === 'other' ? formData.customCourse : formData.courseName}</p></div>
+                        <div><p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-1">מועד הגשה</p><p className="font-semibold text-slate-800" dir="ltr" style={{textAlign:'right'}}>{timestamp?.toLocaleDateString('he-IL')} {timestamp?.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}</p></div>
+                        <div className="pt-3 border-t border-slate-200">
+                          <p className="text-xs text-slate-400 font-medium uppercase tracking-wider mb-2">קישורים/קבצים שנקלטו</p>
+                          <ul className="space-y-2">
+                            {formData.files.map((file, i) => (
+                              <li key={`file-${i}`} className="flex items-start gap-2 text-sm text-slate-700">
+                                <FileTextIcon className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+                                <span className="truncate dir-ltr" title={file.name}>{file.name}</span>
+                              </li>
+                            ))}
+                            {formData.urls.filter(u => u.trim() !== '').map((url, i) => (
+                              <li key={`url-${i}`} className="flex items-start gap-2 text-sm">
+                                <LinkIcon className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+                                <a href={url} target="_blank" className="text-indigo-600 hover:underline truncate dir-ltr" title={url}>{url}</a>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       </div>
                     </div>
