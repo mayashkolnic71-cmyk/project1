@@ -110,7 +110,14 @@
       const [timestamp, setTimestamp] = React.useState(null);
       const [feedbackData, setFeedbackData] = React.useState([]);
       const [courseSettings, setCourseSettings] = React.useState(null);
+      const [activeDocUrl, setActiveDocUrl] = React.useState(null);
       const fileInputRef = useRef(null);
+
+      const COURSE_DOCS = {
+        "ניהול סיכונים ובטיחות המטופל בגריאטריה": "risk_management.docx",
+        "מניעת זיהומים": "infection_control.docx",
+        "טיפול תומך": "palliative_care.docx"
+      };
 
       useEffect(() => {
         const settings = JSON.parse(localStorage.getItem('feedbackAI_course_settings'));
@@ -325,20 +332,20 @@
             <div className="absolute bottom-[-10%] right-[20%] w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
           </div>
 
-          <div className={`w-full ${step === 3 ? 'max-w-4xl' : 'max-w-2xl'} bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/40 z-10 transition-all duration-700 hover:shadow-indigo-500/10`}>
+          <div className={`w-full ${step === 3 ? 'max-w-4xl' : 'max-w-2xl'} bg-slate-100 rounded-3xl overflow-hidden border border-white z-10 transition-all duration-700 shadow-[10px_10px_20px_#d1d5db,-10px_-10px_20px_#ffffff]`}>
             
             {step !== 3 && step !== 'analyzing' && (
-              <div className="bg-gradient-to-l from-indigo-600 via-purple-600 to-indigo-800 p-8 sm:p-10 text-white relative overflow-hidden">
+              <div className="bg-gradient-to-l from-indigo-700 via-indigo-800 to-indigo-900 p-8 sm:p-10 text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
                 
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2 relative z-10">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-2 relative z-10">
                   <div className="flex items-center gap-3">
                     <BotIcon className="w-8 h-8 text-indigo-200" />
                     <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">FeedbackAI</h1>
                   </div>
-                  <img src="https://static.wixstatic.com/media/6bc0af_7019d443c059443b9e25e6cf39f14dea~mv2.jpeg" alt="לוגו העמותה לקידום הסיעוד הגריאטרי" className="h-14 sm:h-16 object-contain bg-white rounded-lg p-2 shadow-md" />
+                  <img src="https://static.wixstatic.com/media/6bc0af_7019d443c059443b9e25e6cf39f14dea~mv2.jpeg" alt="לוגו העמותה לקידום הסיעוד הגריאטרי" className="h-24 object-contain bg-white rounded-xl p-2 shadow-[4px_4px_15px_rgba(0,0,0,0.2)]" />
                 </div>
-                <p className="text-indigo-100 text-lg opacity-90 font-light relative z-10">עוזר ההערכה האקדמי שלך</p>
+                <p className="text-indigo-100 text-lg opacity-90 font-light relative z-10 mt-2">עוזר ההערכה האקדמי שלך</p>
               </div>
             )}
 
@@ -353,7 +360,7 @@
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     {Object.entries(courseSettings).map(([course, data], idx) => {
-                      if (!data.date && !data.link) return null; // Don't show empty courses
+                      if (!data.date) return null; // Only check date since link is internal now
                       
                       // Format date if exists
                       let formattedDate = "";
@@ -362,20 +369,27 @@
                         formattedDate = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
                       }
 
+                      const docFileName = COURSE_DOCS[course];
+                      const docViewerUrl = docFileName ? `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent('https://project1-nine-murex-36.vercel.app/' + docFileName)}` : null;
+
                       return (
-                        <div key={idx} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col h-full hover:shadow-md transition-shadow">
+                        <div key={idx} className="bg-slate-50 p-4 rounded-xl flex flex-col h-full transition-all shadow-[inset_2px_2px_5px_#d1d5db,inset_-2px_-2px_5px_#ffffff] border border-slate-200">
                           <h3 className="font-bold text-slate-800 text-sm mb-2 leading-tight flex-grow">{course}</h3>
                           
-                          <div className="mt-auto space-y-2 pt-2 border-t border-slate-50">
+                          <div className="mt-auto space-y-3 pt-2">
                             {data.date && (
-                              <div className="flex items-center gap-2 text-xs text-rose-600 font-medium bg-rose-50 px-2 py-1.5 rounded-md">
+                              <div className="flex items-center gap-2 text-xs text-rose-700 font-bold bg-white px-3 py-2 rounded-lg shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]">
                                 <AlertCircleIcon className="w-4 h-4" /> הגשה עד: {formattedDate}
                               </div>
                             )}
-                            {data.link && (
-                              <a href={data.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-indigo-600 font-medium bg-indigo-50 hover:bg-indigo-100 px-2 py-1.5 rounded-md transition-colors w-full">
-                                <FileTextIcon className="w-4 h-4" /> צפייה בהנחיות המטלה
-                              </a>
+                            {docViewerUrl && (
+                              <button 
+                                type="button"
+                                onClick={() => setActiveDocUrl(docViewerUrl)} 
+                                className="flex items-center justify-center gap-2 text-xs text-indigo-700 font-bold bg-slate-50 hover:bg-slate-100 px-3 py-2.5 rounded-lg transition-all w-full shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff] active:shadow-[inset_2px_2px_4px_#d1d5db,inset_-2px_-2px_4px_#ffffff]"
+                              >
+                                <FileTextIcon className="w-4 h-4" /> צפייה בהנחיות
+                              </button>
                             )}
                           </div>
                         </div>

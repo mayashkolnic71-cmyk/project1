@@ -106,11 +106,11 @@
                   <h1 className="text-3xl font-bold tracking-tight">לוח בקרה למרצה (הדגמה)</h1>
                   <p className="text-indigo-200 mt-1">צפייה בריכוז ההגשות - FeedbackAI</p>
                 </div>
-                <div className="flex items-center gap-4">
-                  <a href="index.html" className="bg-indigo-700 hover:bg-indigo-600 px-5 py-2.5 rounded-lg font-medium transition text-sm">
+                <div className="flex items-center gap-6">
+                  <a href="index.html" className="bg-indigo-800 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-[4px_4px_10px_rgba(0,0,0,0.3),-4px_-4px_10px_rgba(255,255,255,0.1)] active:shadow-[inset_4px_4px_10px_rgba(0,0,0,0.3),inset_-4px_-4px_10px_rgba(255,255,255,0.1)] text-sm">
                     חזרה למסך ההגשה
                   </a>
-                  <img src="https://static.wixstatic.com/media/6bc0af_7019d443c059443b9e25e6cf39f14dea~mv2.jpeg" alt="לוגו העמותה" className="h-12 object-contain bg-white rounded p-1" />
+                  <img src="https://static.wixstatic.com/media/6bc0af_7019d443c059443b9e25e6cf39f14dea~mv2.jpeg" alt="לוגו העמותה" className="h-24 object-contain bg-white rounded-xl p-2 shadow-[4px_4px_15px_rgba(0,0,0,0.2)]" />
                 </div>
             </div>
           </header>
@@ -126,17 +126,17 @@
               </p>
             </div>
 
-            {/* Tabs */}
-            <div className="flex space-x-reverse space-x-4 mb-6 border-b border-slate-200">
+            {/* Tabs - 3D Neumorphism Style */}
+            <div className="flex space-x-reverse space-x-4 mb-6">
               <button 
                 onClick={() => setActiveTab('submissions')} 
-                className={`pb-3 px-2 font-medium text-lg transition-colors ${activeTab === 'submissions' ? 'border-b-2 border-indigo-600 text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`py-3 px-6 font-bold text-lg rounded-xl transition-all duration-300 ${activeTab === 'submissions' ? 'bg-indigo-50 text-indigo-700 shadow-[inset_4px_4px_8px_#d1d5db,inset_-4px_-4px_8px_#ffffff]' : 'bg-slate-50 text-slate-500 shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff] hover:shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]'}`}
               >
                 הגשות סטודנטים
               </button>
               <button 
                 onClick={() => setActiveTab('settings')} 
-                className={`pb-3 px-2 font-medium text-lg transition-colors ${activeTab === 'settings' ? 'border-b-2 border-indigo-600 text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`py-3 px-6 font-bold text-lg rounded-xl transition-all duration-300 ${activeTab === 'settings' ? 'bg-indigo-50 text-indigo-700 shadow-[inset_4px_4px_8px_#d1d5db,inset_-4px_-4px_8px_#ffffff]' : 'bg-slate-50 text-slate-500 shadow-[4px_4px_8px_#d1d5db,-4px_-4px_8px_#ffffff] hover:shadow-[2px_2px_4px_#d1d5db,-2px_-2px_4px_#ffffff]'}`}
               >
                 ניהול קורסים (תאריכים והנחיות)
               </button>
@@ -156,18 +156,11 @@
                             type="date" 
                             value={courseSettings[course]?.date || ''}
                             onChange={(e) => handleSettingChange(course, 'date', e.target.value)}
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition"
+                            className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-[inset_2px_2px_5px_#d1d5db,inset_-2px_-2px_5px_#ffffff] bg-slate-50"
                           />
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-slate-700 mb-1">קישור למסמך הנחיות (Google Drive / אתר)</label>
-                          <input 
-                            type="url" 
-                            placeholder="https://..."
-                            value={courseSettings[course]?.link || ''}
-                            onChange={(e) => handleSettingChange(course, 'link', e.target.value)}
-                            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition dir-ltr"
-                          />
+                        <div className="flex items-end pb-2">
+                          <p className="text-sm text-slate-500 italic">הנחיות הקורס משולבות כעת אוטומטית מתוך קבצי ה-WORD שהעלית למערכת.</p>
                         </div>
                       </div>
                     </div>
@@ -176,9 +169,9 @@
                 <div className="mt-8 flex justify-end">
                   <button 
                     onClick={() => saveCourseSettings(courseSettings)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl shadow-md transition transform hover:-translate-y-0.5"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-[4px_4px_10px_#d1d5db,-4px_-4px_10px_#ffffff] active:shadow-[inset_4px_4px_10px_rgba(0,0,0,0.2),inset_-4px_-4px_10px_rgba(255,255,255,0.1)]"
                   >
-                    שמור הגדרות קורסים
+                    שמור תאריכי קורסים
                   </button>
                 </div>
               </div>
