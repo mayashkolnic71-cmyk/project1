@@ -128,7 +128,7 @@
                   <a href="index.html" className="bg-indigo-800 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-[4px_4px_10px_rgba(0,0,0,0.3),-4px_-4px_10px_rgba(255,255,255,0.1)] active:shadow-[inset_4px_4px_10px_rgba(0,0,0,0.3),inset_-4px_-4px_10px_rgba(255,255,255,0.1)] text-sm">
                     חזרה למסך ההגשה
                   </a>
-                  <img src="https://static.wixstatic.com/media/6bc0af_7019d443c059443b9e25e6cf39f14dea~mv2.jpeg" alt="לוגו העמותה" className="h-40 object-contain bg-white rounded-2xl p-3 shadow-xl" />
+                  <img src="https://static.wixstatic.com/media/6bc0af_7019d443c059443b9e25e6cf39f14dea~mv2.jpeg" alt="לוגו העמותה" className="h-56 object-contain bg-white rounded-2xl p-3 shadow-xl" />
                 </div>
             </div>
           </header>
@@ -234,9 +234,7 @@
                       <th scope="col" className="px-6 py-4 font-semibold">שם המגיש</th>
                       <th scope="col" className="px-6 py-4 font-semibold">תעודת זהות</th>
                       <th scope="col" className="px-6 py-4 font-semibold">קורס</th>
-                      <th scope="col" className="px-6 py-4 font-semibold">תאריך הגשה</th>
-                      <th scope="col" className="px-6 py-4 font-semibold">ציון AI</th>
-                      <th scope="col" className="px-6 py-4 font-semibold text-center">פעולות (קבצים)</th>
+                      <th scope="col" className="px-6 py-4 font-semibold text-left">תאריך הגשה</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -246,27 +244,12 @@
                           <td className="px-6 py-4 font-medium text-slate-900">{sub.name}</td>
                           <td className="px-6 py-4">{sub.tz}</td>
                           <td className="px-6 py-4 text-indigo-700 font-medium">{sub.course}</td>
-                          <td className="px-6 py-4 dir-ltr text-right">{sub.date}</td>
-                          <td className="px-6 py-4">
-                            <span className="bg-green-100 text-green-800 px-2.5 py-1 rounded-full font-bold text-xs border border-green-200">
-                              {sub.score}/100
-                            </span>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center justify-center gap-2">
-                              <button className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg transition text-xs font-medium border border-indigo-200" title="הצג עבודה">
-                                <EyeIcon /> הצג
-                              </button>
-                              <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-lg transition text-xs font-medium" title="הורד כ-PDF">
-                                <DownloadIcon /> הורד PDF
-                              </button>
-                            </div>
-                          </td>
+                          <td className="px-6 py-4 dir-ltr text-left">{sub.date}</td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="6" className="px-6 py-12 text-center text-slate-500">
+                        <td colSpan="4" className="px-6 py-12 text-center text-slate-500">
                           לא נמצאו הגשות תואמות לחיפוש שלך.
                         </td>
                       </tr>
