@@ -66,6 +66,7 @@
       const [submissions, setSubmissions] = useState(MOCK_SUBMISSIONS);
       const [courseSettings, setCourseSettings] = useState(DEFAULT_COURSE_SETTINGS);
       const [activeTab, setActiveTab] = useState('submissions'); // 'submissions' or 'settings'
+      const [isSaving, setIsSaving] = useState(false);
 
       React.useEffect(() => {
         // Load submissions
@@ -78,17 +79,50 @@
           setSubmissions([...local, ...MOCK_SUBMISSIONS]);
         }
         
-        // Load course settings
-        const settings = JSON.parse(localStorage.getItem('feedbackAI_course_settings'));
-        if (settings) {
-          setCourseSettings(prev => ({ ...prev, ...settings }));
-        }
+        // Load course settings from cloud
+        fetch("https://api.jsonbin.io/v3/b/6a36875ef5f4af5e29142758/latest")
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.record && data.record.courses) {
+              setCourseSettings(prev => ({ ...prev, ...data.record.courses }));
+            }
+          })
+          .catch(err => {
+            console.error("Failed to load course settings from cloud", err);
+            const settings = JSON.parse(localStorage.getItem('feedbackAI_course_settings'));
+            if (settings) {
+              setCourseSettings(prev => ({ ...prev, ...settings }));
+            }
+          });
       }, []);
 
       const saveCourseSettings = (newSettings) => {
+        setIsSaving(true);
         setCourseSettings(newSettings);
         localStorage.setItem('feedbackAI_course_settings', JSON.stringify(newSettings));
-        alert('ההגדרות נשמרו בהצלחה! הסטודנטים יראו את העדכון במסך ההגשה.');
+        
+        fetch("https://api.jsonbin.io/v3/b/6a36875ef5f4af5e29142758", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": "$2a$10$La1p3tU4gshO42Uj1hT.6.Kv1EmRROSLmr5Wr0D5ne4NXQGA0thQa"
+          },
+          body: JSON.stringify({ courses: newSettings })
+        })
+        .then(res => {
+          if (!res.ok) throw new Error("Network response was not ok");
+          return res.json();
+        })
+        .then(() => {
+          alert('ההגדרות נשמרו בענן בהצלחה! הסטודנטים יראו את העדכון מיד במסך ההגשה.');
+        })
+        .catch(err => {
+          console.error(err);
+          alert('הייתה בעיה בשמירה בענן. נא לנסות שוב.');
+        })
+        .finally(() => {
+          setIsSaving(false);
+        });
       };
 
       const handleSettingChange = (course, field, value) => {
@@ -189,9 +223,10 @@
                 <div className="mt-8 flex justify-end">
                   <button 
                     onClick={() => saveCourseSettings(courseSettings)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-[4px_4px_10px_#d1d5db,-4px_-4px_10px_#ffffff] active:shadow-[inset_4px_4px_10px_rgba(0,0,0,0.2),inset_-4px_-4px_10px_rgba(255,255,255,0.1)]"
+                    disabled={isSaving}
+                    className="bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-[4px_4px_10px_#d1d5db,-4px_-4px_10px_#ffffff] active:shadow-[inset_4px_4px_10px_rgba(0,0,0,0.2),inset_-4px_-4px_10px_rgba(255,255,255,0.1)]"
                   >
-                    שמור תאריכי קורסים
+                    {isSaving ? 'שומר בענן...' : 'שמור תאריכי קורסים'}
                   </button>
                 </div>
               </div>
