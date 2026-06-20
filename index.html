@@ -7,24 +7,6 @@
   
   <script src="https://cdn.tailwindcss.com"></script>
   
-  <script>
-    // Global error handler for debugging white screens
-    window.addEventListener('error', function(e) {
-      document.body.innerHTML = '<div style="color:red; padding:20px; font-family:sans-serif; direction:ltr; text-align:left;">' +
-        '<h3>System Error Detected:</h3>' +
-        '<p><b>Error:</b> ' + e.message + '</p>' +
-        '<p><b>File:</b> ' + e.filename + ':' + e.lineno + '</p>' +
-        '</div>';
-    });
-    // Unhandled promise rejections
-    window.addEventListener('unhandledrejection', function(e) {
-      document.body.innerHTML = '<div style="color:red; padding:20px; font-family:sans-serif; direction:ltr; text-align:left;">' +
-        '<h3>Promise Error:</h3>' +
-        '<p><b>Reason:</b> ' + (e.reason && e.reason.message ? e.reason.message : e.reason) + '</p>' +
-        '</div>';
-    });
-  </script>
-
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
