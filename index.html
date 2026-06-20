@@ -119,10 +119,22 @@
       };
 
       useEffect(() => {
-        const settings = JSON.parse(localStorage.getItem('feedbackAI_course_settings'));
-        if (settings) {
-          setCourseSettings(prev => ({ ...prev, ...settings }));
-        }
+        // Fetch global settings from JSONBin
+        fetch("https://api.jsonbin.io/v3/b/6a36875ef5f4af5e29142758/latest")
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.record && data.record.courses) {
+              setCourseSettings(prev => ({ ...prev, ...data.record.courses }));
+            }
+          })
+          .catch(err => {
+            console.error("Failed to load course settings from cloud", err);
+            // Fallback to local storage if API fails
+            const settings = JSON.parse(localStorage.getItem('feedbackAI_course_settings'));
+            if (settings) {
+              setCourseSettings(prev => ({ ...prev, ...settings }));
+            }
+          });
       }, []);
 
       const triggerConfetti = () => {
